@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from "axios";
 
 // Suggested initial states
 const initialMessage = ''
@@ -15,37 +16,51 @@ export default function AppFunctional(props) {
   const [email, setEmail] = useState(initialEmail);
   const [message, setMessage] = useState(initialMessage);
 
-  function getXY() {
+  function getXY(index) {
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
+    let x = 2;
+    let y = 2;
     if(index === 0){
-      return "(1,1)";
+      x = 1;
+      y = 1;
     } else if(index === 1){
-      return "(2,1)";
+      x = 2;
+      y = 1;
     } else if(index === 2){
-      return "(3,1)";
+      x = 3;
+      y = 1;
     } else if(index === 3){
-      return "(1,2)";
+      x = 1;
+      y = 2;
     } else if(index === 4){
-      return "(2,2)";
+      x = 2;
+      y = 2;
     } else if(index === 5){
-      return "(3,2)";
+      x = 3;
+      y = 2;
     } else if(index === 6){
-      return "(1,3)";
+      x = 1;
+      y = 3;
     } else if(index === 7){
-      return "(2,3)";
+      x = 2;
+      y = 3;
     } else if(index === 8){
-      return "(3,3)";
+      x = 3;
+      y = 3;
     } else {
-      return "!there is an index error";
+      console.log("!there is an index error");
+      console.log(index);
     }
+    return getXYMessage(x, y);
   }
 
-  function getXYMessage() {
+  function getXYMessage(x, y) {
     // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
     // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
     // returns the fully constructed string.
-    return ("Coordinates " + getXY(index))
+    // getXY(index);
+    return `Coordinates (${x},${y})`
   }
 
   function reset() {
@@ -104,6 +119,7 @@ export default function AppFunctional(props) {
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault();
+    
     //do more here josh
   }
 
@@ -111,7 +127,7 @@ export default function AppFunctional(props) {
 
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">{getXYMessage()}</h3>
+        <h3 id="coordinates">{getXY(index)}</h3>
         <h3 id="steps">You moved {steps} times</h3>
       </div>
       <div id="grid">
@@ -128,19 +144,14 @@ export default function AppFunctional(props) {
       </div>
       <div id="keypad">
         <button id="left" onClick={getNextIndex}>LEFT</button>
-        {/* minus one */}
         <button id="up" onClick={getNextIndex}>UP</button>
-        {/* minus 3? */}
         <button id="right" onClick={getNextIndex}>RIGHT</button>
-        {/* plus one */}
         <button id="down" onClick={getNextIndex}>DOWN</button>
-        {/* plus 3? */}
         <button id="reset" onClick={reset}>reset</button>
-        {/* default back to original state */}
       </div>
       <form>
         <input id="email" type="email" placeholder="type email"></input>
-        <input id="submit" type="submit"></input>
+        <input id="submit" type="submit" onClick={onSubmit}></input>
       </form>
     </div>
   )
