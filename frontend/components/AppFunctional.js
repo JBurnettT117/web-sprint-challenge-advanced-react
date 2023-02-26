@@ -16,11 +16,12 @@ export default function AppFunctional(props) {
   const [email, setEmail] = useState(initialEmail);
   const [message, setMessage] = useState(initialMessage);
 
+  let x = 2;
+  let y = 2;
+
   function getXY(index) {
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
-    let x = 2;
-    let y = 2;
     if(index === 0){
       x = 1;
       y = 1;
@@ -49,8 +50,7 @@ export default function AppFunctional(props) {
       x = 3;
       y = 3;
     } else {
-      console.log("!there is an index error");
-      console.log(index);
+      console.log("!there is an index error", index);
     }
     return getXYMessage(x, y);
   }
@@ -114,13 +114,17 @@ export default function AppFunctional(props) {
 
   function onChange(evt) {
     // You will need this to update the value of the input.
+    //this is for email josh
+    setEmail(evt.target.value);
   }
 
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault();
-    
-    //do more here josh
+    console.log(email);
+    console.log(x, y);
+    console.log(steps);
+    //we have all of our data just get the post correct and we are done here
   }
 
   return (
@@ -150,7 +154,7 @@ export default function AppFunctional(props) {
         <button id="reset" onClick={reset}>reset</button>
       </div>
       <form>
-        <input id="email" type="email" placeholder="type email"></input>
+        <input id="email" type="email" placeholder="type email" onChange={onChange}></input>
         <input id="submit" type="submit" onClick={onSubmit}></input>
       </form>
     </div>
