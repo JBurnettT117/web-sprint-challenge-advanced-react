@@ -132,11 +132,11 @@ export default class AppClass extends React.Component {
 
   render() {
     const { className } = this.props
-    // const { x, y, steps, index, message } = this.state;
+    const { x, y, steps, index, message } = this.state;
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">{this.getXY(this.index)}</h3>
+          <h3 id="coordinates">{this.getXY(this.state.index)}</h3>
           <h3 id="steps">You moved 0 times</h3>
         </div>
         <div id="grid">
@@ -152,11 +152,11 @@ export default class AppClass extends React.Component {
           <h3 id="message"></h3>
         </div>
         <div id="keypad">
-          <button id="left"onClick={this.move}>LEFT</button>
-          <button id="up">UP</button>
-          <button id="right">RIGHT</button>
-          <button id="down">DOWN</button>
-          <button id="reset">reset</button>
+          <button id="left" onClick={this.move}>LEFT</button>
+          <button id="up" onClick={this.move}>UP</button>
+          <button id="right" onClick={this.move}>RIGHT</button>
+          <button id="down" onClick={this.move}>DOWN</button>
+          <button id="reset" onClick={this.reset}>reset</button>
         </div>
         <form>
           <input id="email" type="email" placeholder="type email" onChange={this.onChange}></input>
