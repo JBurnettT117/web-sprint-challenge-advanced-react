@@ -67,7 +67,6 @@ export default function AppFunctional(props) {
     // Use this helper to reset all states to their initial values.
     setIndex(initialIndex);
     setSteps(initialSteps);
-    setEmail(initialEmail);
     setMessage(initialMessage);
   }
 
@@ -121,9 +120,25 @@ export default function AppFunctional(props) {
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault();
+    let oldEmail = document.getElementById("email");
+    if(oldEmail.value === ""){
+      setMessage("Ouch: email is required")
+      return;
+    }
     console.log(email);
     console.log(x, y);
     console.log(steps);
+    let form = { x, y, steps, email};
+    axios.post("http://localhost:9000/api/result", form)
+      .then((response) => {
+        console.log(response);
+        setMessage(response.data.message);
+      })
+    reset();
+    setEmail(initialEmail);
+    if(oldEmail.value !== ""){
+      oldEmail.value = "";
+    }
     //we have all of our data just get the post correct and we are done here
   }
 
@@ -154,7 +169,7 @@ export default function AppFunctional(props) {
         <button id="reset" onClick={reset}>reset</button>
       </div>
       <form>
-        <input id="email" type="email" placeholder="type email" onChange={onChange}></input>
+        <input id="email" type="email" placeholder="type email" onChange={onChange} ></input>
         <input id="submit" type="submit" onClick={onSubmit}></input>
       </form>
     </div>
