@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from "axios";
 
 // Suggested initial states
 const initialMessage = ''
@@ -29,7 +30,6 @@ export default class AppClass extends React.Component {
   }
 
   getXY = (index) => {
-    console.log(index);
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
     if(index === 0){
@@ -77,7 +77,6 @@ export default class AppClass extends React.Component {
     this.setState({
       index: initialIndex,
       steps: initialSteps,
-      email: initialEmail,
       message: initialMessage
     });
   }
@@ -126,8 +125,23 @@ export default class AppClass extends React.Component {
     this.setState({ email: evt.target.value });
   }
 
-  onSubmit = (evt) => {
+  onSubmit = (event) => {
     // Use a POST request to send a payload to the server.
+    event.preventDefault();
+    const form = { x: this.x, y: this.y, steps: this.state.steps, email: this.state.email };
+    let oldEmail = document.getElementById("email");
+    axios.post("http://localhost:9000/api/result", form)
+      .then((response) => {
+        console.log(response.data.message);
+        this.setState({ message: response.data.message })
+      })
+    this.reset();
+    if(this.state.email !== ""){
+      this.setState({ email: "" })
+    }
+    if(oldEmail.value !== ""){
+      oldEmail.value = "";
+    }
   }
 
   render() {
@@ -137,19 +151,19 @@ export default class AppClass extends React.Component {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{this.getXY(this.state.index)}</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="steps">You moved {this.state.steps} times</h3>
         </div>
         <div id="grid">
           {
             [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-              <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-                {idx === 4 ? 'B' : null}
+              <div key={idx} className={`square${idx === this.state.index ? ' active' : ''}`}>
+                {idx === this.state.index ? 'B' : null}
               </div>
             ))
           }
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
           <button id="left" onClick={this.move}>LEFT</button>
@@ -160,7 +174,7 @@ export default class AppClass extends React.Component {
         </div>
         <form>
           <input id="email" type="email" placeholder="type email" onChange={this.onChange}></input>
-          <input id="submit" type="submit"></input>
+          <input id="submit" type="submit" onClick={this.onSubmit}></input>
         </form>
       </div>
     )
