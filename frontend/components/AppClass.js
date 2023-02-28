@@ -69,7 +69,7 @@ export default class AppClass extends React.Component {
     // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
     // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
     // returns the fully constructed string.
-    return `Coordinates (${x},${y})`;
+    return `Coordinates (${x}, ${y})`;
   }
 
   reset = () => {
@@ -77,8 +77,13 @@ export default class AppClass extends React.Component {
     this.setState({
       index: initialIndex,
       steps: initialSteps,
-      message: initialMessage
+      message: initialMessage,
+      email: initialEmail
     });
+    let oldEmail = document.getElementById("email");
+    if(oldEmail.value !== ""){
+      oldEmail.value = "";
+    }
   }
 
   getNextIndex = (input) => {
@@ -123,25 +128,54 @@ export default class AppClass extends React.Component {
   onChange = (evt) => {
     // You will need this to update the value of the input.
     this.setState({ email: evt.target.value });
+    if (this.validateEmail(this.state.email)) {
+      this.setState({ message: "Ouch: email must be a valid email"})
+    }
+  }
+
+  validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  sSetter = (steps) => {
+    if(steps === 1){
+      return "";
+    }else{
+      return "s";
+    }
   }
 
   onSubmit = (event) => {
     // Use a POST request to send a payload to the server.
     event.preventDefault();
     const form = { x: this.x, y: this.y, steps: this.state.steps, email: this.state.email };
-    let oldEmail = document.getElementById("email");
-    axios.post("http://localhost:9000/api/result", form)
-      .then((response) => {
-        console.log(response.data.message);
-        this.setState({ message: response.data.message })
-      })
-    this.reset();
-    if(this.state.email !== ""){
-      this.setState({ email: "" })
-    }
-    if(oldEmail.value !== ""){
-      oldEmail.value = "";
-    }
+    if(this.state.email === ""){
+      this.setState({message: "Ouch: email is required"})
+      return;
+    } 
+    if( this.validateEmail(this.state.email) === false ) {
+      this.setState({ message: "Ouch: email must be a valid email"})
+      return;
+    } 
+    if(this.state.email === "foo@bar.baz"){
+      this.setState({ message: "foo@bar.baz failure #71"});
+      return;
+    } else {
+        let oldEmail = document.getElementById("email");
+      axios.post("http://localhost:9000/api/result", form)
+        .then((response) => {
+          console.log(response.data.message);
+          this.setState({ message: response.data.message })
+        })
+      // this.reset();
+      if(this.state.email !== ""){
+        this.setState({ email: "" })
+      }
+      if(oldEmail.value !== ""){
+        oldEmail.value = "";
+      }
+    }    
   }
 
   render() {
@@ -151,7 +185,7 @@ export default class AppClass extends React.Component {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{this.getXY(this.state.index)}</h3>
-          <h3 id="steps">You moved {this.state.steps} times</h3>
+          <h3 id="steps">You moved {this.state.steps} time{this.sSetter(this.state.steps)}</h3>
         </div>
         <div id="grid">
           {
@@ -173,7 +207,7 @@ export default class AppClass extends React.Component {
           <button id="reset" onClick={this.reset}>reset</button>
         </div>
         <form>
-          <input id="email" type="email" placeholder="type email" onChange={this.onChange}></input>
+          <input id="email" type="email" placeholder="type email" onChange={this.onChange} ></input>
           <input id="submit" type="submit" onClick={this.onSubmit}></input>
         </form>
       </div>

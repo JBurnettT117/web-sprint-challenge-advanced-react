@@ -60,7 +60,7 @@ export default function AppFunctional(props) {
     // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
     // returns the fully constructed string.
     // getXY(index);
-    return `Coordinates (${x},${y})`
+    return `Coordinates (${x}, ${y})`
   }
 
   function reset() {
@@ -68,6 +68,11 @@ export default function AppFunctional(props) {
     setIndex(initialIndex);
     setSteps(initialSteps);
     setMessage(initialMessage);
+    setEmail(initialEmail);
+    let oldEmail = document.getElementById("email");
+    if(oldEmail.value !== ""){
+      oldEmail.value = "";
+    }
   }
 
   function getNextIndex(input) {
@@ -120,21 +125,30 @@ export default function AppFunctional(props) {
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault();
+    if(email === ""){
+      setMessage("Ouch: email is required");
+      return;
+    }
+    if(validateEmail(email) === false){
+      setMessage("Ouch: email must be a valid email");
+      return
+    }
+    if(email === "foo@bar.baz"){
+      setMessage("foo@bar.baz failure #71")
+      return
+    }
     let oldEmail = document.getElementById("email");
     if(oldEmail.value === ""){
       setMessage("Ouch: email is required")
       return;
     }
-    console.log(email);
-    console.log(x, y);
-    console.log(steps);
     let form = { x, y, steps, email};
     axios.post("http://localhost:9000/api/result", form)
       .then((response) => {
         console.log(response);
         setMessage(response.data.message);
       })
-    reset();
+    // reset();
     setEmail(initialEmail);
     if(oldEmail.value !== ""){
       oldEmail.value = "";
@@ -142,12 +156,25 @@ export default function AppFunctional(props) {
     //we have all of our data just get the post correct and we are done here
   }
 
+  function sSetter(steps){
+    if(steps === 1 ){
+      return "";
+    }else {
+      return "s";
+    }
+  }
+
+  function validateEmail(email){
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
   return (
 
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">{getXY(index)}</h3>
-        <h3 id="steps">You moved {steps} times</h3>
+        <h3 id="steps">You moved {steps} time{sSetter(steps)}</h3>
       </div>
       <div id="grid">
         {
